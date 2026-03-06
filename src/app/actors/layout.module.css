@@ -1,0 +1,20 @@
+.root {
+  position: relative;
+  min-height: 100dvh;
+  background-image: url("https://upload.wikimedia.org/wikipedia/commons/6/69/Chris_Hemsworth_by_Gage_Skidmore_3.jpg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  min-height: 100dvh;
+}

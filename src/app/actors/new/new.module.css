@@ -1,0 +1,44 @@
+.page {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: var(--space-5) var(--space-4) 56px;
+}
+
+.topBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.title {
+  margin: 0;
+  font-size: 1.9rem;
+}
+
+.backLink {
+  padding: 9px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.backLink:hover,
+.backLink:focus-visible {
+  background: #eef2ff;
+  border-color: #cdd8ff;
+  outline: none;
+}
+
+.status {
+  margin-bottom: var(--space-3);
+  color: var(--muted);
+}
+
+.error {
+  margin-bottom: var(--space-3);
+  color: var(--danger);
+}
