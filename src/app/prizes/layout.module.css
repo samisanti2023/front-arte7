@@ -1,0 +1,20 @@
+.root {
+  position: relative;
+  min-height: 100dvh;
+  background-image: url("https://picsum.photos/seed/prizes-bg/1600/900");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  min-height: 100dvh;
+}

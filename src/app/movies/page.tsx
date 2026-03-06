@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { deleteMovie, getMovies } from "@/modules/movies/api";
 import { MovieList } from "@/modules/movies/components/MovieList";
 import { Movie } from "@/modules/movies/types";
+import { getPrizes } from "@/modules/prizes/api";
 import styles from "@/app/movies/movies.module.css";
 
 export default function MoviesPage() {
@@ -18,8 +19,24 @@ export default function MoviesPage() {
     setError(null);
 
     try {
-      const data = await getMovies();
-      setMovies(data);
+      const [moviesData, prizesData] = await Promise.all([getMovies(), getPrizes()]);
+
+      const movieToPrizes = new Map<string, { id: string; name: string }[]>();
+
+      for (const prize of prizesData) {
+        for (const movieRef of prize.movies ?? []) {
+          const current = movieToPrizes.get(movieRef.id) ?? [];
+          current.push({ id: prize.id, name: prize.name });
+          movieToPrizes.set(movieRef.id, current);
+        }
+      }
+
+      const merged = moviesData.map((movie) => ({
+        ...movie,
+        prizes: movieToPrizes.get(movie.id) ?? [],
+      }));
+
+      setMovies(merged);
     } catch {
       setError("No se pudo cargar la lista de movies.");
     } finally {

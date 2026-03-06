@@ -8,6 +8,16 @@ export interface MovieDirector {
   name: string;
 }
 
+export interface MovieActor {
+  id: string;
+  name: string;
+}
+
+export interface MoviePrize {
+  id: string;
+  name: string;
+}
+
 export interface MovieYoutubeTrailer {
   id: string;
   name: string;
@@ -26,6 +36,8 @@ export interface Movie {
   popularity: number;
   genre?: MovieGenre;
   director?: MovieDirector;
+  actors?: MovieActor[];
+  prizes?: MoviePrize[];
   youtubeTrailer?: MovieYoutubeTrailer;
 }
 
@@ -36,4 +48,27 @@ export type MovieFormValues = {
   country: string;
   releaseDate: string;
   popularity: number;
+};
+
+export type PrincipalActorInput = {
+  name: string;
+  photo: string;
+  nationality: string;
+  birthDate: string;
+  biography: string;
+};
+
+export type PrizeStatus = "won" | "nominated";
+
+export type PrizeInput = {
+  name: string;
+  category: string;
+  year: number;
+  status: PrizeStatus;
+};
+
+export type MovieCreationWithAssociationsInput = {
+  movie: MovieFormValues;
+  principalActor: PrincipalActorInput;
+  prize: PrizeInput;
 };

@@ -15,7 +15,9 @@ type MovieCardProps = {
 export function MovieCard({ movie, onDelete, showActions = true }: MovieCardProps) {
   const fallbackSrc = `https://picsum.photos/seed/movie-${movie.id}/800/450`;
   const [imageSrc, setImageSrc] = useState(movie.poster || fallbackSrc);
-  const year = movie.releaseDate?.slice(0, 4) || "N/A";
+  const releaseDate = movie.releaseDate?.includes("T") ? movie.releaseDate.slice(0, 10) : movie.releaseDate || "N/A";
+  const actorName = movie.actors?.[0]?.name ?? "Sin actor";
+  const prizeName = movie.prizes?.[0]?.name ?? "Sin premio";
 
   return (
     <article className={styles.card}>
@@ -33,10 +35,13 @@ export function MovieCard({ movie, onDelete, showActions = true }: MovieCardProp
       <div className={styles.content}>
         <h3 className={styles.title}>{movie.title}</h3>
         <p className={styles.meta}>
-          {movie.country} | {year}
+          Fecha lanzamiento: {releaseDate}
         </p>
         <p className={styles.metaSecondary}>
-          Duracion: {movie.duration} min | Popularidad: {movie.popularity}
+          Actor: {actorName}
+        </p>
+        <p className={styles.metaSecondary}>
+          Premio: {prizeName}
         </p>
 
         {showActions ? (

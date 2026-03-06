@@ -20,6 +20,9 @@ export function AppTopBar() {
           <Link className={styles.navButton} href="/directors">
             Directors
           </Link>
+          <Link className={styles.navButton} href="/prizes">
+            Prizes
+          </Link>
         </nav>
       </div>
     </header>
