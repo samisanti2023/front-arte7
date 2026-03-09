@@ -5,14 +5,10 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
 import { useI18n } from "@/components/I18nProvider";
-import { getMovie, updateMovie } from "@/modules/movies/api";
-import { MovieForm } from "@/modules/movies/components/MovieForm";
-import { MovieFormValues } from "@/modules/movies/types";
-import styles from "@/app/movies/[id]/edit/edit.module.css";
-
-function toDateInputValue(value: string): string {
-  return value.includes("T") ? value.slice(0, 10) : value;
-}
+import { getGenre, updateGenre } from "@/modules/genres/api";
+import { GenreForm } from "@/modules/genres/components/GenreForm";
+import { GenreFormValues } from "@/modules/genres/types";
+import styles from "@/app/genres/[id]/edit/edit.module.css";
 
 export default function Page() {
   const { t } = useI18n();
@@ -20,7 +16,7 @@ export default function Page() {
   const id = params?.id as string | undefined;
   const router = useRouter();
 
-  const [initialValues, setInitialValues] = useState<MovieFormValues | null>(null);
+  const [initialValues, setInitialValues] = useState<GenreFormValues | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -32,45 +28,40 @@ export default function Page() {
       return;
     }
 
-    const loadMovie = async () => {
+    const loadGenre = async () => {
       setLoading(true);
       setError(null);
 
       try {
-        const movie = await getMovie(id);
+        const genre = await getGenre(id);
         setInitialValues({
-          title: movie.title,
-          poster: movie.poster,
-          duration: movie.duration,
-          country: movie.country,
-          releaseDate: toDateInputValue(movie.releaseDate),
-          popularity: movie.popularity,
+          type: genre.type,
         });
       } catch (e: unknown) {
         if (e instanceof Error) {
           setError(e.message);
         } else {
-          setError("No se pudo cargar la movie.");
+          setError("No se pudo cargar el genero.");
         }
       } finally {
         setLoading(false);
       }
     };
 
-    void loadMovie();
+    void loadGenre();
   }, [id]);
 
-  const handleSubmit = async (values: MovieFormValues) => {
+  const handleSubmit = async (values: GenreFormValues) => {
     if (!id || submitting) return;
 
     setSubmitting(true);
     setError(null);
 
     try {
-      await updateMovie(id, values);
-      router.push("/movies");
+      await updateGenre(id, values);
+      router.push("/genres");
     } catch {
-      setError("No se pudo actualizar la movie.");
+      setError("No se pudo actualizar el genero.");
     } finally {
       setSubmitting(false);
     }
@@ -80,8 +71,8 @@ export default function Page() {
     return (
       <main className={styles.page}>
         <header className={styles.topBar}>
-          <h1 className={styles.title}>{t("Editar movie")}</h1>
-          <Link className={styles.backLink} href="/movies">
+          <h1 className={styles.title}>{t("Editar genero")}</h1>
+          <Link className={styles.backLink} href="/genres">
             {t("Volver")}
           </Link>
         </header>
@@ -93,14 +84,14 @@ export default function Page() {
   return (
     <main className={styles.page}>
       <header className={styles.topBar}>
-        <h1 className={styles.title}>{t("Editar movie")}</h1>
-        <Link className={styles.backLink} href="/movies">
+        <h1 className={styles.title}>{t("Editar genero")}</h1>
+        <Link className={styles.backLink} href="/genres">
           {t("Volver")}
         </Link>
       </header>
       {error ? <p className={styles.error}>{t(error)}</p> : null}
       {initialValues ? (
-        <MovieForm
+        <GenreForm
           initialValues={initialValues}
           onSubmit={handleSubmit}
           submitLabel={submitting ? t("Guardando...") : t("Guardar")}

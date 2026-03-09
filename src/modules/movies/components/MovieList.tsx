@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n } from "@/components/I18nProvider";
 import { MovieCard } from "@/modules/movies/components/MovieCard";
 import { Movie } from "@/modules/movies/types";
 import styles from "@/modules/movies/components/MovieList.module.css";
@@ -10,8 +11,10 @@ type MovieListProps = {
 };
 
 export function MovieList({ movies, onDelete }: MovieListProps) {
+  const { t } = useI18n();
+
   if (movies.length === 0) {
-    return <p className={styles.empty}>No hay movies para mostrar.</p>;
+    return <p className={styles.empty}>{t("No hay movies para mostrar.")}</p>;
   }
 
   return (

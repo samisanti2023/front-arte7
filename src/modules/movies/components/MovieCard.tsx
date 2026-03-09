@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 
+import { useI18n } from "@/components/I18nProvider";
 import { Movie } from "@/modules/movies/types";
 import styles from "@/modules/movies/components/MovieCard.module.css";
 
@@ -13,11 +14,14 @@ type MovieCardProps = {
 };
 
 export function MovieCard({ movie, onDelete, showActions = true }: MovieCardProps) {
+  const { t } = useI18n();
   const fallbackSrc = `https://picsum.photos/seed/movie-${movie.id}/800/450`;
   const [imageSrc, setImageSrc] = useState(movie.poster || fallbackSrc);
-  const releaseDate = movie.releaseDate?.includes("T") ? movie.releaseDate.slice(0, 10) : movie.releaseDate || "N/A";
-  const actorName = movie.actors?.[0]?.name ?? "Sin actor";
-  const prizeName = movie.prizes?.[0]?.name ?? "Sin premio";
+  const releaseDate = movie.releaseDate?.includes("T")
+    ? movie.releaseDate.slice(0, 10)
+    : movie.releaseDate || t("N/A");
+  const actorName = movie.actors?.[0]?.name ?? t("Sin actor");
+  const prizeName = movie.prizes?.[0]?.name ?? t("Sin premio");
 
   return (
     <article className={styles.card}>
@@ -26,7 +30,7 @@ export function MovieCard({ movie, onDelete, showActions = true }: MovieCardProp
           <img
             className={styles.image}
             src={imageSrc}
-            alt={`Poster de ${movie.title}`}
+            alt={`${t("Poster de")} ${movie.title}`}
             onError={() => setImageSrc(fallbackSrc)}
           />
         </div>
@@ -35,22 +39,22 @@ export function MovieCard({ movie, onDelete, showActions = true }: MovieCardProp
       <div className={styles.content}>
         <h3 className={styles.title}>{movie.title}</h3>
         <p className={styles.meta}>
-          Fecha lanzamiento: {releaseDate}
+          {t("Fecha lanzamiento:")} {releaseDate}
         </p>
         <p className={styles.metaSecondary}>
-          Actor: {actorName}
+          {t("Actor:")} {actorName}
         </p>
         <p className={styles.metaSecondary}>
-          Premio: {prizeName}
+          {t("Premio:")} {prizeName}
         </p>
 
         {showActions ? (
           <div className={styles.actions}>
             <Link className={styles.editButton} href={`/movies/${movie.id}/edit`}>
-              Editar
+              {t("Editar")}
             </Link>
             <button className={styles.deleteButton} type="button" onClick={() => onDelete?.(movie.id)}>
-              Eliminar
+              {t("Eliminar")}
             </button>
           </div>
         ) : null}

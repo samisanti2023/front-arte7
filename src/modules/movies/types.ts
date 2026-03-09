@@ -67,8 +67,22 @@ export type PrizeInput = {
   status: PrizeStatus;
 };
 
+export type MovieRelationsInput = {
+  genreId: string;
+  directorId: string;
+};
+
+export type MovieYoutubeTrailerInput = {
+  name: string;
+  url: string;
+  duration: number;
+  channel: string;
+};
+
 export type MovieCreationWithAssociationsInput = {
   movie: MovieFormValues;
   principalActor: PrincipalActorInput;
   prize: PrizeInput;
+  relations: MovieRelationsInput;
+  youtubeTrailer: MovieYoutubeTrailerInput;
 };

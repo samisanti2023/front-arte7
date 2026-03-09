@@ -3,12 +3,14 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+import { useI18n } from "@/components/I18nProvider";
 import { deletePrize, getPrizes } from "@/modules/prizes/api";
 import { PrizeList } from "@/modules/prizes/components/PrizeList";
 import { Prize } from "@/modules/prizes/types";
 import styles from "@/app/prizes/prizes.module.css";
 
 export default function PrizesPage() {
+  const { t } = useI18n();
   const [prizes, setPrizes] = useState<Prize[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -44,15 +46,15 @@ export default function PrizesPage() {
     <main className={styles.page}>
       <header className={styles.topBar}>
         <div>
-          <h1 className={styles.title}>Premios</h1>
+          <h1 className={styles.title}>{t("Premios")}</h1>
         </div>
         <Link className={styles.createLink} href="/prizes/new">
-          Crear premio
+          {t("Crear premio")}
         </Link>
       </header>
 
-      {loading ? <p className={styles.status}>Cargando...</p> : null}
-      {error ? <p className={styles.error}>{error}</p> : null}
+      {loading ? <p className={styles.status}>{t("Cargando...")}</p> : null}
+      {error ? <p className={styles.error}>{t(error)}</p> : null}
 
       <PrizeList prizes={prizes} onDelete={onDelete} />
     </main>

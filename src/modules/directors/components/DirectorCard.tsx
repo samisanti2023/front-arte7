@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 
+import { useI18n } from "@/components/I18nProvider";
 import { Director } from "@/modules/directors/types";
 import styles from "@/modules/directors/components/DirectorCard.module.css";
 
@@ -13,6 +14,7 @@ type DirectorCardProps = {
 };
 
 export function DirectorCard({ director, onDelete, showActions = true }: DirectorCardProps) {
+  const { t } = useI18n();
   const fallbackSrc = `https://picsum.photos/seed/director-${director.id}/800/450`;
   const [imageSrc, setImageSrc] = useState(director.photo || fallbackSrc);
 
@@ -23,7 +25,7 @@ export function DirectorCard({ director, onDelete, showActions = true }: Directo
           <img
             className={styles.image}
             src={imageSrc}
-            alt={`Foto de ${director.name}`}
+            alt={`${t("Foto de")} ${director.name}`}
             onError={() => setImageSrc(fallbackSrc)}
           />
         </div>
@@ -36,10 +38,10 @@ export function DirectorCard({ director, onDelete, showActions = true }: Directo
         {showActions ? (
           <div className={styles.actions}>
             <Link className={styles.editButton} href={`/directors/${director.id}/edit`}>
-              Editar
+              {t("Editar")}
             </Link>
             <button className={styles.deleteButton} type="button" onClick={() => onDelete?.(director.id)}>
-              Eliminar
+              {t("Eliminar")}
             </button>
           </div>
         ) : null}

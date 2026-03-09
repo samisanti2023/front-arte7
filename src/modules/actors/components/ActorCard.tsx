@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 
+import { useI18n } from "@/components/I18nProvider";
 import { Actor } from "@/modules/actors/types";
 import styles from "@/modules/actors/components/ActorCard.module.css";
 
@@ -13,6 +14,7 @@ type ActorCardProps = {
 };
 
 export function ActorCard({ actor, onDelete, showActions = true }: ActorCardProps) {
+  const { t } = useI18n();
   const fallbackSrc = `https://picsum.photos/seed/actor-${actor.id}/800/450`;
   const [imageSrc, setImageSrc] = useState(actor.photo || fallbackSrc);
 
@@ -23,7 +25,7 @@ export function ActorCard({ actor, onDelete, showActions = true }: ActorCardProp
           <img
             className={styles.image}
             src={imageSrc}
-            alt={`Foto de ${actor.name}`}
+            alt={`${t("Foto de")} ${actor.name}`}
             onError={() => setImageSrc(fallbackSrc)}
           />
         </div>
@@ -36,10 +38,10 @@ export function ActorCard({ actor, onDelete, showActions = true }: ActorCardProp
         {showActions ? (
           <div className={styles.actions}>
             <Link className={styles.editButton} href={`/actors/${actor.id}/edit`}>
-              Editar
+              {t("Editar")}
             </Link>
             <button className={styles.deleteButton} type="button" onClick={() => onDelete?.(actor.id)}>
-              Eliminar
+              {t("Eliminar")}
             </button>
           </div>
         ) : null}

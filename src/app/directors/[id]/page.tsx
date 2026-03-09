@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 
+import { useI18n } from "@/components/I18nProvider";
 import { DetailBackground } from "@/components/DetailBackground";
 import { getDirector } from "@/modules/directors/api";
 import { DirectorCard } from "@/modules/directors/components/DirectorCard";
@@ -15,6 +16,7 @@ function formatDate(value: string): string {
 }
 
 export default function DirectorDetailPage() {
+  const { t } = useI18n();
   const params = useParams<{ id: string }>();
   const id = params?.id as string | undefined;
 
@@ -24,7 +26,7 @@ export default function DirectorDetailPage() {
 
   useEffect(() => {
     if (!id) {
-      setError("ID inválido.");
+      setError("ID invalido.");
       setLoading(false);
       return;
     }
@@ -50,37 +52,38 @@ export default function DirectorDetailPage() {
     <DetailBackground seedPrefix={`director-${id ?? "unknown"}`}>
       <main className={styles.page}>
         <header className={styles.topBar}>
-          <h1 className={styles.title}>Detalle director</h1>
+          <h1 className={styles.title}>{t("Detalle director")}</h1>
           <div className={styles.topActions}>
             <Link className={styles.link} href="/directors">
-              Volver
+              {t("Volver")}
             </Link>
             {id ? (
               <Link className={styles.link} href={`/directors/${id}/edit`}>
-                Editar
+                {t("Editar")}
               </Link>
             ) : null}
           </div>
         </header>
 
-        {loading ? <p className={styles.status}>Cargando...</p> : null}
-        {error ? <p className={styles.error}>{error}</p> : null}
+        {loading ? <p className={styles.status}>{t("Cargando...")}</p> : null}
+        {error ? <p className={styles.error}>{t(error)}</p> : null}
 
         {director ? (
           <div className={styles.contentGrid}>
             <DirectorCard director={director} showActions={false} />
 
             <section className={styles.detailsPanel}>
-              <h2 className={styles.detailsTitle}>Informacion general</h2>
+              <h2 className={styles.detailsTitle}>{t("Informacion general")}</h2>
               <ul className={styles.detailsList}>
                 <li className={styles.detailsItem}>
-                  <span className={styles.detailsLabel}>Nombre:</span> {director.name}
+                  <span className={styles.detailsLabel}>{t("Nombre:")}</span> {director.name}
                 </li>
                 <li className={styles.detailsItem}>
-                  <span className={styles.detailsLabel}>Nacionalidad:</span> {director.nationality}
+                  <span className={styles.detailsLabel}>{t("Nacionalidad:")}</span> {director.nationality}
                 </li>
                 <li className={styles.detailsItem}>
-                  <span className={styles.detailsLabel}>Nacimiento:</span> {formatDate(director.birthDate)}
+                  <span className={styles.detailsLabel}>{t("Nacimiento:")}</span>{" "}
+                  {formatDate(director.birthDate)}
                 </li>
               </ul>
 

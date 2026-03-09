@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 
+import { useI18n } from "@/components/I18nProvider";
 import { directorFormSchema } from "@/modules/directors/schemas";
 import { DirectorFormValues } from "@/modules/directors/types";
 import styles from "@/modules/directors/components/DirectorForm.module.css";
@@ -15,6 +16,7 @@ type DirectorFormProps = {
 type FieldErrors = Partial<Record<keyof DirectorFormValues, string>>;
 
 export function DirectorForm({ initialValues, onSubmit, submitLabel }: DirectorFormProps) {
+  const { t } = useI18n();
   const [name, setName] = useState(initialValues?.name ?? "");
   const [photo, setPhoto] = useState(initialValues?.photo ?? "");
   const [nationality, setNationality] = useState(initialValues?.nationality ?? "");
@@ -54,14 +56,14 @@ export function DirectorForm({ initialValues, onSubmit, submitLabel }: DirectorF
         <img
           className={styles.previewImage}
           src={previewSrc}
-          alt="Vista previa del director"
+          alt={t("Vista previa del director")}
           onError={() => setPreviewFailed(true)}
         />
       </div>
 
       <div className={styles.field}>
         <label className={styles.label} htmlFor="name">
-          Nombre
+          {t("Nombre")}
         </label>
         <input
           className={styles.input}
@@ -70,12 +72,12 @@ export function DirectorForm({ initialValues, onSubmit, submitLabel }: DirectorF
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
-        {errors.name ? <p className={styles.error}>{errors.name}</p> : null}
+        {errors.name ? <p className={styles.error}>{t(errors.name)}</p> : null}
       </div>
 
       <div className={styles.field}>
         <label className={styles.label} htmlFor="photo">
-          Foto
+          {t("Foto")}
         </label>
         <input
           className={styles.input}
@@ -87,12 +89,12 @@ export function DirectorForm({ initialValues, onSubmit, submitLabel }: DirectorF
             setPreviewFailed(false);
           }}
         />
-        {errors.photo ? <p className={styles.error}>{errors.photo}</p> : null}
+        {errors.photo ? <p className={styles.error}>{t(errors.photo)}</p> : null}
       </div>
 
       <div className={styles.field}>
         <label className={styles.label} htmlFor="nationality">
-          Nacionalidad
+          {t("Nacionalidad")}
         </label>
         <input
           className={styles.input}
@@ -101,12 +103,12 @@ export function DirectorForm({ initialValues, onSubmit, submitLabel }: DirectorF
           value={nationality}
           onChange={(e) => setNationality(e.target.value)}
         />
-        {errors.nationality ? <p className={styles.error}>{errors.nationality}</p> : null}
+        {errors.nationality ? <p className={styles.error}>{t(errors.nationality)}</p> : null}
       </div>
 
       <div className={styles.field}>
         <label className={styles.label} htmlFor="birthDate">
-          Fecha de nacimiento
+          {t("Fecha de nacimiento")}
         </label>
         <input
           className={styles.input}
@@ -115,12 +117,12 @@ export function DirectorForm({ initialValues, onSubmit, submitLabel }: DirectorF
           value={birthDate}
           onChange={(e) => setBirthDate(e.target.value)}
         />
-        {errors.birthDate ? <p className={styles.error}>{errors.birthDate}</p> : null}
+        {errors.birthDate ? <p className={styles.error}>{t(errors.birthDate)}</p> : null}
       </div>
 
       <div className={styles.field}>
         <label className={styles.label} htmlFor="biography">
-          Biografia
+          {t("Biografia")}
         </label>
         <textarea
           className={styles.textarea}
@@ -128,7 +130,7 @@ export function DirectorForm({ initialValues, onSubmit, submitLabel }: DirectorF
           value={biography}
           onChange={(e) => setBiography(e.target.value)}
         />
-        {errors.biography ? <p className={styles.error}>{errors.biography}</p> : null}
+        {errors.biography ? <p className={styles.error}>{t(errors.biography)}</p> : null}
       </div>
 
       <button className={styles.submit} type="submit">

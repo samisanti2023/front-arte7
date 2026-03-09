@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 
+import { useI18n } from "@/components/I18nProvider";
 import { DetailBackground } from "@/components/DetailBackground";
 import { getPrize } from "@/modules/prizes/api";
 import { PrizeCard } from "@/modules/prizes/components/PrizeCard";
@@ -11,6 +12,7 @@ import { Prize } from "@/modules/prizes/types";
 import styles from "@/app/entity-detail.module.css";
 
 export default function PrizeDetailPage() {
+  const { t } = useI18n();
   const params = useParams<{ id: string }>();
   const id = params?.id as string | undefined;
 
@@ -20,7 +22,7 @@ export default function PrizeDetailPage() {
 
   useEffect(() => {
     if (!id) {
-      setError("ID inválido.");
+      setError("ID invalido.");
       setLoading(false);
       return;
     }
@@ -46,40 +48,40 @@ export default function PrizeDetailPage() {
     <DetailBackground seedPrefix={`prize-${id ?? "unknown"}`}>
       <main className={styles.page}>
         <header className={styles.topBar}>
-          <h1 className={styles.title}>Detalle premio</h1>
+          <h1 className={styles.title}>{t("Detalle premio")}</h1>
           <div className={styles.topActions}>
             <Link className={styles.link} href="/prizes">
-              Volver
+              {t("Volver")}
             </Link>
             {id ? (
               <Link className={styles.link} href={`/prizes/${id}/edit`}>
-                Editar
+                {t("Editar")}
               </Link>
             ) : null}
           </div>
         </header>
 
-        {loading ? <p className={styles.status}>Cargando...</p> : null}
-        {error ? <p className={styles.error}>{error}</p> : null}
+        {loading ? <p className={styles.status}>{t("Cargando...")}</p> : null}
+        {error ? <p className={styles.error}>{t(error)}</p> : null}
 
         {prize ? (
           <div className={styles.contentGrid}>
             <PrizeCard prize={prize} showActions={false} />
 
             <section className={styles.detailsPanel}>
-              <h2 className={styles.detailsTitle}>Informacion general</h2>
+              <h2 className={styles.detailsTitle}>{t("Informacion general")}</h2>
               <ul className={styles.detailsList}>
                 <li className={styles.detailsItem}>
-                  <span className={styles.detailsLabel}>Nombre:</span> {prize.name}
+                  <span className={styles.detailsLabel}>{t("Nombre:")}</span> {prize.name}
                 </li>
                 <li className={styles.detailsItem}>
-                  <span className={styles.detailsLabel}>Categoria:</span> {prize.category}
+                  <span className={styles.detailsLabel}>{t("Categoria:")}</span> {prize.category}
                 </li>
                 <li className={styles.detailsItem}>
-                  <span className={styles.detailsLabel}>Anio:</span> {prize.year}
+                  <span className={styles.detailsLabel}>{t("Anio:")}</span> {prize.year}
                 </li>
                 <li className={styles.detailsItem}>
-                  <span className={styles.detailsLabel}>Estado:</span> {prize.status}
+                  <span className={styles.detailsLabel}>{t("Estado:")}</span> {t(prize.status)}
                 </li>
               </ul>
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n } from "@/components/I18nProvider";
 import { DirectorCard } from "@/modules/directors/components/DirectorCard";
 import { Director } from "@/modules/directors/types";
 import styles from "@/modules/directors/components/DirectorList.module.css";
@@ -10,8 +11,10 @@ type DirectorListProps = {
 };
 
 export function DirectorList({ directors, onDelete }: DirectorListProps) {
+  const { t } = useI18n();
+
   if (directors.length === 0) {
-    return <p className={styles.empty}>No hay directores para mostrar.</p>;
+    return <p className={styles.empty}>{t("No hay directores para mostrar.")}</p>;
   }
 
   return (

@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 
+import { useI18n } from "@/components/I18nProvider";
 import { actorFormSchema } from "@/modules/actors/schemas";
 import { ActorFormValues } from "@/modules/actors/types";
 import { getMovies } from "@/modules/movies/api";
@@ -17,6 +18,7 @@ type ActorFormProps = {
 type FieldErrors = Partial<Record<keyof ActorFormValues, string>>;
 
 export function ActorForm({ initialValues, onSubmit, submitLabel }: ActorFormProps) {
+  const { t } = useI18n();
   const [name, setName] = useState(initialValues?.name ?? "");
   const [photo, setPhoto] = useState(initialValues?.photo ?? "");
   const [nationality, setNationality] = useState(initialValues?.nationality ?? "");
@@ -83,14 +85,14 @@ export function ActorForm({ initialValues, onSubmit, submitLabel }: ActorFormPro
         <img
           className={styles.previewImage}
           src={previewSrc}
-          alt="Vista previa del actor"
+          alt={t("Vista previa del actor")}
           onError={() => setPreviewFailed(true)}
         />
       </div>
 
       <div className={styles.field}>
         <label className={styles.label} htmlFor="name">
-          Nombre
+          {t("Nombre")}
         </label>
         <input
           className={styles.input}
@@ -99,12 +101,12 @@ export function ActorForm({ initialValues, onSubmit, submitLabel }: ActorFormPro
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
-        {errors.name ? <p className={styles.error}>{errors.name}</p> : null}
+        {errors.name ? <p className={styles.error}>{t(errors.name)}</p> : null}
       </div>
 
       <div className={styles.field}>
         <label className={styles.label} htmlFor="photo">
-          Foto
+          {t("Foto")}
         </label>
         <input
           className={styles.input}
@@ -116,12 +118,12 @@ export function ActorForm({ initialValues, onSubmit, submitLabel }: ActorFormPro
             setPreviewFailed(false);
           }}
         />
-        {errors.photo ? <p className={styles.error}>{errors.photo}</p> : null}
+        {errors.photo ? <p className={styles.error}>{t(errors.photo)}</p> : null}
       </div>
 
       <div className={styles.field}>
         <label className={styles.label} htmlFor="nationality">
-          Nacionalidad
+          {t("Nacionalidad")}
         </label>
         <input
           className={styles.input}
@@ -130,12 +132,12 @@ export function ActorForm({ initialValues, onSubmit, submitLabel }: ActorFormPro
           value={nationality}
           onChange={(e) => setNationality(e.target.value)}
         />
-        {errors.nationality ? <p className={styles.error}>{errors.nationality}</p> : null}
+        {errors.nationality ? <p className={styles.error}>{t(errors.nationality)}</p> : null}
       </div>
 
       <div className={styles.field}>
         <label className={styles.label} htmlFor="birthDate">
-          Fecha de nacimiento
+          {t("Fecha de nacimiento")}
         </label>
         <input
           className={styles.input}
@@ -144,12 +146,12 @@ export function ActorForm({ initialValues, onSubmit, submitLabel }: ActorFormPro
           value={birthDate}
           onChange={(e) => setBirthDate(e.target.value)}
         />
-        {errors.birthDate ? <p className={styles.error}>{errors.birthDate}</p> : null}
+        {errors.birthDate ? <p className={styles.error}>{t(errors.birthDate)}</p> : null}
       </div>
 
       <div className={styles.field}>
         <label className={styles.label} htmlFor="biography">
-          Biografia
+          {t("Biografia")}
         </label>
         <textarea
           className={styles.textarea}
@@ -157,14 +159,14 @@ export function ActorForm({ initialValues, onSubmit, submitLabel }: ActorFormPro
           value={biography}
           onChange={(e) => setBiography(e.target.value)}
         />
-        {errors.biography ? <p className={styles.error}>{errors.biography}</p> : null}
+        {errors.biography ? <p className={styles.error}>{t(errors.biography)}</p> : null}
       </div>
 
       <div className={styles.field}>
-        <p className={styles.label}>Peliculas asociadas</p>
+        <p className={styles.label}>{t("Peliculas asociadas")}</p>
 
-        {moviesLoading ? <p className={styles.movieHint}>Cargando peliculas...</p> : null}
-        {moviesError ? <p className={styles.error}>{moviesError}</p> : null}
+        {moviesLoading ? <p className={styles.movieHint}>{t("Cargando peliculas...")}</p> : null}
+        {moviesError ? <p className={styles.error}>{t(moviesError)}</p> : null}
 
         {!moviesLoading && !moviesError ? (
           <div className={styles.movieGrid}>
@@ -182,7 +184,7 @@ export function ActorForm({ initialValues, onSubmit, submitLabel }: ActorFormPro
           </div>
         ) : null}
 
-        {errors.movieIds ? <p className={styles.error}>{errors.movieIds}</p> : null}
+        {errors.movieIds ? <p className={styles.error}>{t(errors.movieIds)}</p> : null}
       </div>
 
       <button className={styles.submit} type="submit">

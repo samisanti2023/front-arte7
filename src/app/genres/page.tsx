@@ -4,41 +4,41 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { useI18n } from "@/components/I18nProvider";
-import { deleteActor, getActors } from "@/modules/actors/api";
-import { ActorList } from "@/modules/actors/components/ActorList";
-import { Actor } from "@/modules/actors/types";
-import styles from "@/app/actors/actors.module.css";
+import { deleteGenre, getGenres } from "@/modules/genres/api";
+import { GenreList } from "@/modules/genres/components/GenreList";
+import { Genre } from "@/modules/genres/types";
+import styles from "@/app/genres/genres.module.css";
 
-export default function ActorsPage() {
+export default function GenresPage() {
   const { t } = useI18n();
-  const [actors, setActors] = useState<Actor[]>([]);
+  const [genres, setGenres] = useState<Genre[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const loadActors = async () => {
+  const loadGenres = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const data = await getActors();
-      setActors(data);
+      const data = await getGenres();
+      setGenres(data);
     } catch {
-      setError("No se pudo cargar la lista de actores.");
+      setError("No se pudo cargar la lista de generos.");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    void loadActors();
+    void loadGenres();
   }, []);
 
   const onDelete = async (id: string) => {
     try {
-      await deleteActor(id);
-      await loadActors();
+      await deleteGenre(id);
+      await loadGenres();
     } catch {
-      setError("No se pudo eliminar el actor.");
+      setError("No se pudo eliminar el genero.");
     }
   };
 
@@ -46,17 +46,17 @@ export default function ActorsPage() {
     <main className={styles.page}>
       <header className={styles.topBar}>
         <div>
-          <h1 className={styles.title}>{t("Actores")}</h1>
+          <h1 className={styles.title}>{t("Generos")}</h1>
         </div>
-        <Link className={styles.createLink} href="/actors/new">
-          {t("Crear actor")}
+        <Link className={styles.createLink} href="/genres/new">
+          {t("Crear genero")}
         </Link>
       </header>
 
       {loading ? <p className={styles.status}>{t("Cargando...")}</p> : null}
       {error ? <p className={styles.error}>{t(error)}</p> : null}
 
-      <ActorList actors={actors} onDelete={onDelete} />
+      <GenreList genres={genres} onDelete={onDelete} />
     </main>
   );
 }

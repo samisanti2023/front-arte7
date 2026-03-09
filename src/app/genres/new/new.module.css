@@ -1,0 +1,45 @@
+.page {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: var(--space-5) var(--space-4) 56px;
+}
+
+.topBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.title {
+  margin: 0;
+  font-size: 1.9rem;
+  color: #fff;
+}
+
+.backLink {
+  padding: 9px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.backLink:hover,
+.backLink:focus-visible {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.6);
+  outline: none;
+}
+
+.status {
+  margin-bottom: var(--space-3);
+  color: #fff;
+}
+
+.error {
+  margin-bottom: var(--space-3);
+  color: #ffd8df;
+}

@@ -4,12 +4,14 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+import { useI18n } from "@/components/I18nProvider";
 import { createActor } from "@/modules/actors/api";
 import { ActorForm } from "@/modules/actors/components/ActorForm";
 import { ActorFormValues } from "@/modules/actors/types";
 import styles from "@/app/actors/new/new.module.css";
 
 export default function NewActorPage() {
+  const { t } = useI18n();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -33,14 +35,14 @@ export default function NewActorPage() {
   return (
     <main className={styles.page}>
       <header className={styles.topBar}>
-        <h1 className={styles.title}>Crear actor</h1>
+        <h1 className={styles.title}>{t("Crear actor")}</h1>
         <Link className={styles.backLink} href="/actors">
-          Volver
+          {t("Volver")}
         </Link>
       </header>
-      {error ? <p className={styles.error}>{error}</p> : null}
-      {loading ? <p className={styles.status}>Guardando...</p> : null}
-      <ActorForm onSubmit={handleSubmit} submitLabel="Crear" />
+      {error ? <p className={styles.error}>{t(error)}</p> : null}
+      {loading ? <p className={styles.status}>{t("Guardando...")}</p> : null}
+      <ActorForm onSubmit={handleSubmit} submitLabel={t("Crear")} />
     </main>
   );
 }

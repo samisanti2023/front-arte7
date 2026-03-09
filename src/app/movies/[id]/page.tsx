@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 
+import { useI18n } from "@/components/I18nProvider";
 import { DetailBackground } from "@/components/DetailBackground";
 import { getMovie } from "@/modules/movies/api";
 import { MovieCard } from "@/modules/movies/components/MovieCard";
@@ -16,6 +17,7 @@ function formatDate(value: string): string {
 }
 
 export default function MovieDetailPage() {
+  const { t } = useI18n();
   const params = useParams<{ id: string }>();
   const id = params?.id as string | undefined;
 
@@ -25,7 +27,7 @@ export default function MovieDetailPage() {
 
   useEffect(() => {
     if (!id) {
-      setError("ID inválido.");
+      setError("ID invalido.");
       setLoading(false);
       return;
     }
@@ -58,72 +60,72 @@ export default function MovieDetailPage() {
     <DetailBackground seedPrefix={`movie-${id ?? "unknown"}`}>
       <main className={styles.page}>
         <header className={styles.topBar}>
-          <h1 className={styles.title}>Detalle movie</h1>
+          <h1 className={styles.title}>{t("Detalle movie")}</h1>
           <div className={styles.topActions}>
             <Link className={styles.link} href="/movies">
-              Volver
+              {t("Volver")}
             </Link>
             {id ? (
               <Link className={styles.link} href={`/movies/${id}/edit`}>
-                Editar
+                {t("Editar")}
               </Link>
             ) : null}
           </div>
         </header>
 
-        {loading ? <p className={styles.status}>Cargando...</p> : null}
-        {error ? <p className={styles.error}>{error}</p> : null}
+        {loading ? <p className={styles.status}>{t("Cargando...")}</p> : null}
+        {error ? <p className={styles.error}>{t(error)}</p> : null}
 
         {movie ? (
           <div className={styles.contentGrid}>
             <MovieCard movie={movie} showActions={false} />
 
             <section className={styles.detailsPanel}>
-              <h2 className={styles.detailsTitle}>Informacion general</h2>
+              <h2 className={styles.detailsTitle}>{t("Informacion general")}</h2>
               <ul className={styles.detailsList}>
                 <li className={styles.detailsItem}>
-                  <span className={styles.detailsLabel}>ID:</span> {movie.id}
+                  <span className={styles.detailsLabel}>{t("ID:")}</span> {movie.id}
                 </li>
                 <li className={styles.detailsItem}>
-                  <span className={styles.detailsLabel}>Titulo:</span> {movie.title}
+                  <span className={styles.detailsLabel}>{t("Titulo:")}</span> {movie.title}
                 </li>
                 <li className={styles.detailsItem}>
-                  <span className={styles.detailsLabel}>Poster:</span>{" "}
+                  <span className={styles.detailsLabel}>{t("Poster:")}</span>{" "}
                   <a href={movie.poster} target="_blank" rel="noreferrer">
                     {movie.poster}
                   </a>
                 </li>
                 <li className={styles.detailsItem}>
-                  <span className={styles.detailsLabel}>Pais:</span> {movie.country}
+                  <span className={styles.detailsLabel}>{t("Pais:")}</span> {movie.country}
                 </li>
                 <li className={styles.detailsItem}>
-                  <span className={styles.detailsLabel}>Estreno:</span> {formatDate(movie.releaseDate)}
+                  <span className={styles.detailsLabel}>{t("Estreno:")}</span> {formatDate(movie.releaseDate)}
                 </li>
                 <li className={styles.detailsItem}>
-                  <span className={styles.detailsLabel}>Duracion:</span> {movie.duration} min
+                  <span className={styles.detailsLabel}>{t("Duracion:")}</span> {movie.duration} min
                 </li>
                 <li className={styles.detailsItem}>
-                  <span className={styles.detailsLabel}>Popularidad:</span> {movie.popularity}
+                  <span className={styles.detailsLabel}>{t("Popularidad:")}</span> {movie.popularity}
                 </li>
                 {movie.genre?.type ? (
                   <li className={styles.detailsItem}>
-                    <span className={styles.detailsLabel}>Genero:</span> {movie.genre.type}
+                    <span className={styles.detailsLabel}>{t("Genero:")}</span> {movie.genre.type}
                   </li>
                 ) : null}
                 {movie.director?.name ? (
                   <li className={styles.detailsItem}>
-                    <span className={styles.detailsLabel}>Director:</span>{" "}
+                    <span className={styles.detailsLabel}>{t("Director:")}</span>{" "}
                     <Link href={`/directors/${movie.director.id}`}>{movie.director.name}</Link>
                   </li>
                 ) : null}
                 {movie.youtubeTrailer?.name ? (
                   <li className={styles.detailsItem}>
-                    <span className={styles.detailsLabel}>Trailer:</span> {movie.youtubeTrailer.name}
+                    <span className={styles.detailsLabel}>{t("Trailer:")}</span> {movie.youtubeTrailer.name}
                   </li>
                 ) : null}
               </ul>
 
-              <h2 className={styles.detailsTitle}>Actores</h2>
+              <h2 className={styles.detailsTitle}>{t("Actores")}</h2>
               {movie.actors?.length ? (
                 <ul className={styles.chipList}>
                   {movie.actors.map((actor) => (
@@ -133,10 +135,10 @@ export default function MovieDetailPage() {
                   ))}
                 </ul>
               ) : (
-                <p className={styles.detailsText}>No tiene actores asociados.</p>
+                <p className={styles.detailsText}>{t("No tiene actores asociados.")}</p>
               )}
 
-              <h2 className={styles.detailsTitle}>Premios</h2>
+              <h2 className={styles.detailsTitle}>{t("Premios")}</h2>
               {movie.prizes?.length ? (
                 <ul className={styles.chipList}>
                   {movie.prizes.map((prize) => (
@@ -146,13 +148,13 @@ export default function MovieDetailPage() {
                   ))}
                 </ul>
               ) : (
-                <p className={styles.detailsText}>No tiene premios asociados.</p>
+                <p className={styles.detailsText}>{t("No tiene premios asociados.")}</p>
               )}
 
               <ul className={styles.detailsList}>
                 {movie.youtubeTrailer?.url ? (
                   <li className={styles.detailsItem}>
-                    <span className={styles.detailsLabel}>URL trailer:</span>{" "}
+                    <span className={styles.detailsLabel}>{t("URL trailer:")}</span>{" "}
                     <a href={movie.youtubeTrailer.url} target="_blank" rel="noreferrer">
                       {movie.youtubeTrailer.url}
                     </a>
@@ -160,12 +162,13 @@ export default function MovieDetailPage() {
                 ) : null}
                 {movie.youtubeTrailer?.channel ? (
                   <li className={styles.detailsItem}>
-                    <span className={styles.detailsLabel}>Canal trailer:</span> {movie.youtubeTrailer.channel}
+                    <span className={styles.detailsLabel}>{t("Canal trailer:")}</span>{" "}
+                    {movie.youtubeTrailer.channel}
                   </li>
                 ) : null}
                 {movie.youtubeTrailer?.duration ? (
                   <li className={styles.detailsItem}>
-                    <span className={styles.detailsLabel}>Duracion trailer:</span>{" "}
+                    <span className={styles.detailsLabel}>{t("Duracion trailer:")}</span>{" "}
                     {movie.youtubeTrailer.duration}
                   </li>
                 ) : null}

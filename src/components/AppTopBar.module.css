@@ -28,6 +28,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .navButton {
@@ -53,6 +54,39 @@
   background: rgba(255, 255, 255, 0.2);
   border-color: rgba(255, 255, 255, 0.55);
   transform: translateY(-1px);
+}
+
+.localeWrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 4px;
+  padding-left: 6px;
+}
+
+.localeLabel {
+  color: #fff;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.localeSelect {
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font: inherit;
+  font-size: 0.86rem;
+}
+
+.localeSelect:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.75);
+  outline-offset: 1px;
+}
+
+.localeSelect option {
+  color: #111827;
 }
 
 @media (max-width: 680px) {

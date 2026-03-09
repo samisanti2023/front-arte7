@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 
+import { useI18n } from "@/components/I18nProvider";
 import { Prize } from "@/modules/prizes/types";
 import styles from "@/modules/prizes/components/PrizeCard.module.css";
 
@@ -12,13 +13,14 @@ type PrizeCardProps = {
 };
 
 export function PrizeCard({ prize, onDelete, showActions = true }: PrizeCardProps) {
+  const { t } = useI18n();
   const cover = `https://picsum.photos/seed/prize-${prize.id}/800/450`;
 
   return (
     <article className={styles.card}>
       <Link className={styles.mediaLink} href={`/prizes/${prize.id}`}>
         <div className={styles.media}>
-          <img className={styles.image} src={cover} alt={`Imagen de ${prize.name}`} />
+          <img className={styles.image} src={cover} alt={`${t("Imagen de")} ${prize.name}`} />
         </div>
       </Link>
 
@@ -27,15 +29,15 @@ export function PrizeCard({ prize, onDelete, showActions = true }: PrizeCardProp
         <p className={styles.meta}>
           {prize.category} | {prize.year}
         </p>
-        <p className={styles.status}>{prize.status}</p>
+        <p className={styles.status}>{t(prize.status)}</p>
 
         {showActions ? (
           <div className={styles.actions}>
             <Link className={styles.editButton} href={`/prizes/${prize.id}/edit`}>
-              Editar
+              {t("Editar")}
             </Link>
             <button className={styles.deleteButton} type="button" onClick={() => onDelete?.(prize.id)}>
-              Eliminar
+              {t("Eliminar")}
             </button>
           </div>
         ) : null}

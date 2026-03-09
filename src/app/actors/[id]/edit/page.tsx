@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
+import { useI18n } from "@/components/I18nProvider";
 import { getActor, updateActor } from "@/modules/actors/api";
 import { ActorForm } from "@/modules/actors/components/ActorForm";
 import { ActorFormValues } from "@/modules/actors/types";
@@ -14,6 +15,7 @@ function toDateInputValue(value: string): string {
 }
 
 export default function Page() {
+  const { t } = useI18n();
   const params = useParams<{ id: string }>();
   const id = params?.id as string | undefined;
   const router = useRouter();
@@ -25,7 +27,7 @@ export default function Page() {
 
   useEffect(() => {
     if (!id) {
-      setError("ID inválido.");
+      setError("ID invalido.");
       setLoading(false);
       return;
     }
@@ -78,12 +80,12 @@ export default function Page() {
     return (
       <main className={styles.page}>
         <header className={styles.topBar}>
-          <h1 className={styles.title}>Editar actor</h1>
+          <h1 className={styles.title}>{t("Editar actor")}</h1>
           <Link className={styles.backLink} href="/actors">
-            Volver
+            {t("Volver")}
           </Link>
         </header>
-        <p className={styles.status}>Cargando...</p>
+        <p className={styles.status}>{t("Cargando...")}</p>
       </main>
     );
   }
@@ -91,17 +93,17 @@ export default function Page() {
   return (
     <main className={styles.page}>
       <header className={styles.topBar}>
-        <h1 className={styles.title}>Editar actor</h1>
+        <h1 className={styles.title}>{t("Editar actor")}</h1>
         <Link className={styles.backLink} href="/actors">
-          Volver
+          {t("Volver")}
         </Link>
       </header>
-      {error ? <p className={styles.error}>{error}</p> : null}
+      {error ? <p className={styles.error}>{t(error)}</p> : null}
       {initialValues ? (
         <ActorForm
           initialValues={initialValues}
           onSubmit={handleSubmit}
-          submitLabel={submitting ? "Guardando..." : "Guardar"}
+          submitLabel={submitting ? t("Guardando...") : t("Guardar")}
         />
       ) : null}
     </main>

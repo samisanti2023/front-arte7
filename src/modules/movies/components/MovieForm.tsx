@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 
+import { useI18n } from "@/components/I18nProvider";
 import { movieFormSchema } from "@/modules/movies/schemas";
 import { MovieFormValues } from "@/modules/movies/types";
 import styles from "@/modules/movies/components/MovieForm.module.css";
@@ -15,6 +16,7 @@ type MovieFormProps = {
 type FieldErrors = Partial<Record<keyof MovieFormValues, string>>;
 
 export function MovieForm({ initialValues, onSubmit, submitLabel }: MovieFormProps) {
+  const { t } = useI18n();
   const [title, setTitle] = useState(initialValues?.title ?? "");
   const [poster, setPoster] = useState(initialValues?.poster ?? "");
   const [duration, setDuration] = useState(
@@ -67,14 +69,14 @@ export function MovieForm({ initialValues, onSubmit, submitLabel }: MovieFormPro
         <img
           className={styles.previewImage}
           src={previewSrc}
-          alt="Vista previa de la movie"
+          alt={t("Vista previa de la movie")}
           onError={() => setPreviewFailed(true)}
         />
       </div>
 
       <div className={styles.field}>
         <label className={styles.label} htmlFor="title">
-          Titulo
+          {t("Titulo")}
         </label>
         <input
           className={styles.input}
@@ -83,12 +85,12 @@ export function MovieForm({ initialValues, onSubmit, submitLabel }: MovieFormPro
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
-        {errors.title ? <p className={styles.error}>{errors.title}</p> : null}
+        {errors.title ? <p className={styles.error}>{t(errors.title)}</p> : null}
       </div>
 
       <div className={styles.field}>
         <label className={styles.label} htmlFor="poster">
-          Poster
+          {t("Poster")}
         </label>
         <input
           className={styles.input}
@@ -100,12 +102,12 @@ export function MovieForm({ initialValues, onSubmit, submitLabel }: MovieFormPro
             setPreviewFailed(false);
           }}
         />
-        {errors.poster ? <p className={styles.error}>{errors.poster}</p> : null}
+        {errors.poster ? <p className={styles.error}>{t(errors.poster)}</p> : null}
       </div>
 
       <div className={styles.field}>
         <label className={styles.label} htmlFor="duration">
-          Duracion (min)
+          {t("Duracion (min)")}
         </label>
         <input
           className={styles.input}
@@ -115,12 +117,12 @@ export function MovieForm({ initialValues, onSubmit, submitLabel }: MovieFormPro
           value={duration}
           onChange={(e) => setDuration(e.target.value)}
         />
-        {errors.duration ? <p className={styles.error}>{errors.duration}</p> : null}
+        {errors.duration ? <p className={styles.error}>{t(errors.duration)}</p> : null}
       </div>
 
       <div className={styles.field}>
         <label className={styles.label} htmlFor="country">
-          Pais
+          {t("Pais")}
         </label>
         <input
           className={styles.input}
@@ -129,12 +131,12 @@ export function MovieForm({ initialValues, onSubmit, submitLabel }: MovieFormPro
           value={country}
           onChange={(e) => setCountry(e.target.value)}
         />
-        {errors.country ? <p className={styles.error}>{errors.country}</p> : null}
+        {errors.country ? <p className={styles.error}>{t(errors.country)}</p> : null}
       </div>
 
       <div className={styles.field}>
         <label className={styles.label} htmlFor="releaseDate">
-          Fecha de estreno
+          {t("Fecha de estreno")}
         </label>
         <input
           className={styles.input}
@@ -143,12 +145,12 @@ export function MovieForm({ initialValues, onSubmit, submitLabel }: MovieFormPro
           value={releaseDate}
           onChange={(e) => setReleaseDate(e.target.value)}
         />
-        {errors.releaseDate ? <p className={styles.error}>{errors.releaseDate}</p> : null}
+        {errors.releaseDate ? <p className={styles.error}>{t(errors.releaseDate)}</p> : null}
       </div>
 
       <div className={styles.field}>
         <label className={styles.label} htmlFor="popularity">
-          Popularidad (1-5)
+          {t("Popularidad (1-5)")}
         </label>
         <input
           className={styles.input}
@@ -160,7 +162,7 @@ export function MovieForm({ initialValues, onSubmit, submitLabel }: MovieFormPro
           value={popularity}
           onChange={(e) => setPopularity(e.target.value)}
         />
-        {errors.popularity ? <p className={styles.error}>{errors.popularity}</p> : null}
+        {errors.popularity ? <p className={styles.error}>{t(errors.popularity)}</p> : null}
       </div>
 
       <button className={styles.submit} type="submit">

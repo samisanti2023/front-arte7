@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { AppTopBar } from "@/components/AppTopBar";
+import { I18nProvider } from "@/components/I18nProvider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -26,8 +27,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <AppTopBar />
-        {children}
+        <I18nProvider>
+          <AppTopBar />
+          {children}
+        </I18nProvider>
       </body>
     </html>
   );

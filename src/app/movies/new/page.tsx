@@ -1,18 +1,33 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { createMovieWithAssociations } from "@/modules/movies/api";
+import { useI18n } from "@/components/I18nProvider";
+import {
+  createMovieWithAssociations,
+  getMovieDirectors,
+  getMovieGenres,
+} from "@/modules/movies/api";
 import { MovieForm } from "@/modules/movies/components/MovieForm";
-import { MovieFormValues, PrizeStatus } from "@/modules/movies/types";
+import { MovieDirector, MovieFormValues, MovieGenre, PrizeStatus } from "@/modules/movies/types";
 import styles from "@/app/movies/new/new.module.css";
 
 export default function NewMoviePage() {
+  const { t } = useI18n();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [optionsLoading, setOptionsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [genres, setGenres] = useState<MovieGenre[]>([]);
+  const [directors, setDirectors] = useState<MovieDirector[]>([]);
+  const [genreId, setGenreId] = useState("");
+  const [directorId, setDirectorId] = useState("");
+  const [trailerName, setTrailerName] = useState("");
+  const [trailerUrl, setTrailerUrl] = useState("");
+  const [trailerDuration, setTrailerDuration] = useState("");
+  const [trailerChannel, setTrailerChannel] = useState("");
   const [actorName, setActorName] = useState("");
   const [actorPhoto, setActorPhoto] = useState("");
   const [actorNationality, setActorNationality] = useState("");
@@ -21,15 +36,55 @@ export default function NewMoviePage() {
   const [prizeName, setPrizeName] = useState("");
   const [prizeCategory, setPrizeCategory] = useState("");
   const [prizeYear, setPrizeYear] = useState("");
-  const [prizeStatus, setPrizeStatus] = useState<PrizeStatus>("nominated");
+  const [prizeStatus, setPrizeStatus] = useState<PrizeStatus | "">("");
+
+  useEffect(() => {
+    let ignore = false;
+
+    const loadOptions = async () => {
+      setOptionsLoading(true);
+      setError(null);
+
+      try {
+        const [genresData, directorsData] = await Promise.all([getMovieGenres(), getMovieDirectors()]);
+
+        if (ignore) return;
+        setGenres(genresData);
+        setDirectors(directorsData);
+      } catch {
+        if (ignore) return;
+        setError("No se pudieron cargar genero y director.");
+      } finally {
+        if (!ignore) {
+          setOptionsLoading(false);
+        }
+      }
+    };
+
+    void loadOptions();
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   const handleSubmit = async (values: MovieFormValues) => {
     if (loading) return;
+    if (optionsLoading) {
+      setError("Aun se estan cargando genero y director.");
+      return;
+    }
 
     setLoading(true);
     setError(null);
 
     try {
+      const trimmedGenreId = genreId.trim();
+      const trimmedDirectorId = directorId.trim();
+      const trimmedTrailerName = trailerName.trim();
+      const trimmedTrailerUrl = trailerUrl.trim();
+      const trimmedTrailerChannel = trailerChannel.trim();
+      const parsedTrailerDuration = Number(trailerDuration);
       const trimmedActorName = actorName.trim();
       const trimmedActorPhoto = actorPhoto.trim();
       const trimmedActorNationality = actorNationality.trim();
@@ -39,11 +94,19 @@ export default function NewMoviePage() {
       const trimmedPrizeCategory = prizeCategory.trim();
       const parsedYear = Number(prizeYear);
 
+      const isTrailerUrl = /^https?:\/\/.+/i.test(trimmedTrailerUrl);
+      const isTrailerDurationValid = Number.isInteger(parsedTrailerDuration) && parsedTrailerDuration > 0;
       const isActorPhotoUrl = /^https?:\/\/.+/i.test(trimmedActorPhoto);
       const isActorBirthDate = /^\d{4}-\d{2}-\d{2}$/.test(trimmedActorBirthDate);
       const isPrizeYearValid = Number.isInteger(parsedYear) && parsedYear >= 1900;
 
       if (
+        !trimmedGenreId ||
+        !trimmedDirectorId ||
+        !trimmedTrailerName ||
+        !trimmedTrailerUrl ||
+        !trailerDuration.trim() ||
+        !trimmedTrailerChannel ||
         !trimmedActorName ||
         !trimmedActorPhoto ||
         !trimmedActorNationality ||
@@ -51,9 +114,22 @@ export default function NewMoviePage() {
         !trimmedActorBiography ||
         !trimmedPrizeName ||
         !trimmedPrizeCategory ||
-        !prizeYear.trim()
+        !prizeYear.trim() ||
+        !prizeStatus
       ) {
-        setError("Completa todos los campos de actor principal y premio.");
+        setError("Completa todos los campos requeridos.");
+        setLoading(false);
+        return;
+      }
+
+      if (!isTrailerUrl) {
+        setError("La URL del trailer debe ser valida.");
+        setLoading(false);
+        return;
+      }
+
+      if (!isTrailerDurationValid) {
+        setError("La duracion del trailer debe ser un numero mayor a 0.");
         setLoading(false);
         return;
       }
@@ -95,7 +171,17 @@ export default function NewMoviePage() {
           name: trimmedPrizeName,
           category: trimmedPrizeCategory,
           year: parsedYear,
-          status: prizeStatus,
+          status: prizeStatus as PrizeStatus,
+        },
+        relations: {
+          genreId: trimmedGenreId,
+          directorId: trimmedDirectorId,
+        },
+        youtubeTrailer: {
+          name: trimmedTrailerName,
+          url: trimmedTrailerUrl,
+          duration: parsedTrailerDuration,
+          channel: trimmedTrailerChannel,
         },
       });
       router.push("/movies");
@@ -109,20 +195,112 @@ export default function NewMoviePage() {
   return (
     <main className={styles.page}>
       <header className={styles.topBar}>
-        <h1 className={styles.title}>Crear movie</h1>
+        <h1 className={styles.title}>{t("Crear movie")}</h1>
         <Link className={styles.backLink} href="/movies">
-          Volver
+          {t("Volver")}
         </Link>
       </header>
-      {error ? <p className={styles.error}>{error}</p> : null}
-      {loading ? <p className={styles.status}>Guardando...</p> : null}
+      {error ? <p className={styles.error}>{t(error)}</p> : null}
+      {loading ? <p className={styles.status}>{t("Guardando...")}</p> : null}
+      {optionsLoading ? <p className={styles.status}>{t("Cargando genero y director...")}</p> : null}
 
       <section className={styles.extraSection}>
-        <h2 className={styles.sectionTitle}>Actor principal</h2>
+        <h2 className={styles.sectionTitle}>{t("Datos requeridos de la movie")}</h2>
+        <div className={styles.fieldGrid}>
+          <div className={styles.field}>
+            <label className={styles.label} htmlFor="genreId">
+              {t("Genero")}
+            </label>
+            <select
+              className={styles.input}
+              id="genreId"
+              value={genreId}
+              onChange={(e) => setGenreId(e.target.value)}
+            >
+              <option value="">{t("Selecciona un genero")}</option>
+              {genres.map((genre) => (
+                <option key={genre.id} value={genre.id}>
+                  {genre.type}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className={styles.field}>
+            <label className={styles.label} htmlFor="directorId">
+              {t("Director")}
+            </label>
+            <select
+              className={styles.input}
+              id="directorId"
+              value={directorId}
+              onChange={(e) => setDirectorId(e.target.value)}
+            >
+              <option value="">{t("Selecciona un director")}</option>
+              {directors.map((director) => (
+                <option key={director.id} value={director.id}>
+                  {director.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className={styles.field}>
+            <label className={styles.label} htmlFor="trailerName">
+              {t("Nombre del trailer")}
+            </label>
+            <input
+              className={styles.input}
+              id="trailerName"
+              type="text"
+              value={trailerName}
+              onChange={(e) => setTrailerName(e.target.value)}
+            />
+          </div>
+          <div className={styles.field}>
+            <label className={styles.label} htmlFor="trailerUrl">
+              {t("URL del trailer")}
+            </label>
+            <input
+              className={styles.input}
+              id="trailerUrl"
+              type="url"
+              value={trailerUrl}
+              onChange={(e) => setTrailerUrl(e.target.value)}
+            />
+          </div>
+          <div className={styles.field}>
+            <label className={styles.label} htmlFor="trailerDuration">
+              {t("Duracion trailer (min)")}
+            </label>
+            <input
+              className={styles.input}
+              id="trailerDuration"
+              type="number"
+              min={1}
+              value={trailerDuration}
+              onChange={(e) => setTrailerDuration(e.target.value)}
+            />
+          </div>
+          <div className={styles.field}>
+            <label className={styles.label} htmlFor="trailerChannel">
+              {t("Canal del trailer")}
+            </label>
+            <input
+              className={styles.input}
+              id="trailerChannel"
+              type="text"
+              value={trailerChannel}
+              onChange={(e) => setTrailerChannel(e.target.value)}
+            />
+          </div>
+        </div>
+      </section>
+
+      <section className={styles.extraSection}>
+        <h2 className={styles.sectionTitle}>{t("Actor principal")}</h2>
         <div className={styles.fieldGrid}>
           <div className={styles.field}>
             <label className={styles.label} htmlFor="actorName">
-              Nombre
+              {t("Nombre")}
             </label>
             <input
               className={styles.input}
@@ -134,7 +312,7 @@ export default function NewMoviePage() {
           </div>
           <div className={styles.field}>
             <label className={styles.label} htmlFor="actorPhoto">
-              Foto (URL)
+              {t("Foto (URL)")}
             </label>
             <input
               className={styles.input}
@@ -146,7 +324,7 @@ export default function NewMoviePage() {
           </div>
           <div className={styles.field}>
             <label className={styles.label} htmlFor="actorNationality">
-              Nacionalidad
+              {t("Nacionalidad")}
             </label>
             <input
               className={styles.input}
@@ -158,7 +336,7 @@ export default function NewMoviePage() {
           </div>
           <div className={styles.field}>
             <label className={styles.label} htmlFor="actorBirthDate">
-              Fecha de nacimiento
+              {t("Fecha de nacimiento")}
             </label>
             <input
               className={styles.input}
@@ -170,7 +348,7 @@ export default function NewMoviePage() {
           </div>
           <div className={`${styles.field} ${styles.fieldFull}`}>
             <label className={styles.label} htmlFor="actorBiography">
-              Biografia
+              {t("Biografia")}
             </label>
             <textarea
               className={styles.textarea}
@@ -183,11 +361,11 @@ export default function NewMoviePage() {
       </section>
 
       <section className={styles.extraSection}>
-        <h2 className={styles.sectionTitle}>Premio para la pelicula</h2>
+        <h2 className={styles.sectionTitle}>{t("Premio para la pelicula")}</h2>
         <div className={styles.fieldGrid}>
           <div className={styles.field}>
             <label className={styles.label} htmlFor="prizeName">
-              Nombre del premio
+              {t("Nombre del premio")}
             </label>
             <input
               className={styles.input}
@@ -199,7 +377,7 @@ export default function NewMoviePage() {
           </div>
           <div className={styles.field}>
             <label className={styles.label} htmlFor="prizeCategory">
-              Categoria
+              {t("Categoria")}
             </label>
             <input
               className={styles.input}
@@ -211,7 +389,7 @@ export default function NewMoviePage() {
           </div>
           <div className={styles.field}>
             <label className={styles.label} htmlFor="prizeYear">
-              Anio
+              {t("Anio")}
             </label>
             <input
               className={styles.input}
@@ -223,22 +401,23 @@ export default function NewMoviePage() {
           </div>
           <div className={styles.field}>
             <label className={styles.label} htmlFor="prizeStatus">
-              Estado
+              {t("Estado")}
             </label>
             <select
               className={styles.input}
               id="prizeStatus"
               value={prizeStatus}
-              onChange={(e) => setPrizeStatus(e.target.value as PrizeStatus)}
+              onChange={(e) => setPrizeStatus(e.target.value as PrizeStatus | "")}
             >
-              <option value="nominated">nominated</option>
-              <option value="won">won</option>
+              <option value="">{t("Selecciona estado")}</option>
+              <option value="nominated">{t("nominated")}</option>
+              <option value="won">{t("won")}</option>
             </select>
           </div>
         </div>
       </section>
 
-      <MovieForm onSubmit={handleSubmit} submitLabel="Crear" />
+      <MovieForm onSubmit={handleSubmit} submitLabel={t("Crear")} />
     </main>
   );
 }

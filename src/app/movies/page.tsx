@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+import { useI18n } from "@/components/I18nProvider";
 import { deleteMovie, getMovies } from "@/modules/movies/api";
 import { MovieList } from "@/modules/movies/components/MovieList";
 import { Movie } from "@/modules/movies/types";
@@ -10,6 +11,7 @@ import { getPrizes } from "@/modules/prizes/api";
 import styles from "@/app/movies/movies.module.css";
 
 export default function MoviesPage() {
+  const { t } = useI18n();
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -61,15 +63,15 @@ export default function MoviesPage() {
     <main className={styles.page}>
       <header className={styles.topBar}>
         <div>
-          <h1 className={styles.title}>Movies</h1>
+          <h1 className={styles.title}>{t("Peliculas")}</h1>
         </div>
         <Link className={styles.createLink} href="/movies/new">
-          Crear movie
+          {t("Crear movie")}
         </Link>
       </header>
 
-      {loading ? <p className={styles.status}>Cargando...</p> : null}
-      {error ? <p className={styles.error}>{error}</p> : null}
+      {loading ? <p className={styles.status}>{t("Cargando...")}</p> : null}
+      {error ? <p className={styles.error}>{t(error)}</p> : null}
 
       <MovieList movies={movies} onDelete={onDelete} />
     </main>

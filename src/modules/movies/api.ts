@@ -4,7 +4,9 @@ import {
   MovieDirector,
   MovieFormValues,
   MovieGenre,
+  MovieRelationsInput,
   MovieYoutubeTrailer,
+  MovieYoutubeTrailerInput,
   PrincipalActorInput,
   PrizeInput,
 } from "@/modules/movies/types";
@@ -33,8 +35,27 @@ function toIsoDate(date: string): string {
   return date.includes("T") ? date : `${date}T00:00:00.000Z`;
 }
 
+function buildDefaultTrailerInput(title: string): MovieYoutubeTrailerInput {
+  const suffix = Date.now();
+
+  return {
+    name: `Trailer ${title}`.slice(0, 90),
+    url: `https://example.com/trailer-${suffix}`,
+    duration: 2,
+    channel: "Codex",
+  };
+}
+
+export async function getMovieGenres(): Promise<MovieGenre[]> {
+  return await requestJson<MovieGenre[]>(`${API_URL}/genres`);
+}
+
+export async function getMovieDirectors(): Promise<MovieDirector[]> {
+  return await requestJson<MovieDirector[]>(`${API_URL}/directors`);
+}
+
 async function getFirstGenreId(): Promise<string> {
-  const genres = await requestJson<MovieGenre[]>(`${API_URL}/genres`);
+  const genres = await getMovieGenres();
 
   if (!genres.length) {
     throw new Error("No genres disponibles en backend.");
@@ -44,7 +65,7 @@ async function getFirstGenreId(): Promise<string> {
 }
 
 async function getFirstDirectorId(): Promise<string> {
-  const directors = await requestJson<MovieDirector[]>(`${API_URL}/directors`);
+  const directors = await getMovieDirectors();
 
   if (!directors.length) {
     throw new Error("No directors disponibles en backend.");
@@ -53,19 +74,17 @@ async function getFirstDirectorId(): Promise<string> {
   return directors[0].id;
 }
 
-async function createYoutubeTrailer(title: string): Promise<MovieYoutubeTrailer> {
-  const suffix = Date.now();
-
+async function createYoutubeTrailer(data: MovieYoutubeTrailerInput): Promise<MovieYoutubeTrailer> {
   return await requestJson<MovieYoutubeTrailer>(`${API_URL}/youtube-trailers`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      name: `Trailer ${title}`.slice(0, 90),
-      url: `https://example.com/trailer-${suffix}`,
-      duration: 2,
-      channel: "Codex",
+      name: data.name,
+      url: data.url,
+      duration: data.duration,
+      channel: data.channel,
     }),
   });
 }
@@ -127,9 +146,18 @@ export async function getMovie(id: string): Promise<Movie> {
   return await requestJson<Movie>(`${API_URL}/movies/${id}`);
 }
 
-export async function createMovie(data: MovieFormValues): Promise<Movie> {
-  const [genreId, directorId] = await Promise.all([getFirstGenreId(), getFirstDirectorId()]);
-  const trailer = await createYoutubeTrailer(data.title);
+type CreateMovieOptions = {
+  relations: MovieRelationsInput;
+  youtubeTrailerId: string;
+};
+
+export async function createMovie(data: MovieFormValues, options?: CreateMovieOptions): Promise<Movie> {
+  const relations = options?.relations;
+  const genreId = relations?.genreId ?? (await getFirstGenreId());
+  const directorId = relations?.directorId ?? (await getFirstDirectorId());
+  const youtubeTrailerId =
+    options?.youtubeTrailerId ??
+    (await createYoutubeTrailer(buildDefaultTrailerInput(data.title))).id;
 
   return await requestJson<Movie>(`${API_URL}/movies`, {
     method: "POST",
@@ -140,7 +168,7 @@ export async function createMovie(data: MovieFormValues): Promise<Movie> {
       buildMoviePayload(data, {
         genreId,
         directorId,
-        youtubeTrailerId: trailer.id,
+        youtubeTrailerId,
       }),
     ),
   });
@@ -149,7 +177,11 @@ export async function createMovie(data: MovieFormValues): Promise<Movie> {
 export async function createMovieWithAssociations(
   input: MovieCreationWithAssociationsInput,
 ): Promise<Movie> {
-  const movie = await createMovie(input.movie);
+  const trailer = await createYoutubeTrailer(input.youtubeTrailer);
+  const movie = await createMovie(input.movie, {
+    relations: input.relations,
+    youtubeTrailerId: trailer.id,
+  });
   const [actor, prize] = await Promise.all([
     createPrincipalActor(input.principalActor),
     createPrize(input.prize),
@@ -171,7 +203,9 @@ export async function updateMovie(id: string, data: MovieFormValues): Promise<Mo
   const current = await getMovie(id);
   const genreId = current.genre?.id ?? (await getFirstGenreId());
   const directorId = current.director?.id ?? (await getFirstDirectorId());
-  const youtubeTrailerId = current.youtubeTrailer?.id ?? (await createYoutubeTrailer(data.title)).id;
+  const youtubeTrailerId =
+    current.youtubeTrailer?.id ??
+    (await createYoutubeTrailer(buildDefaultTrailerInput(data.title))).id;
 
   return await requestJson<Movie>(`${API_URL}/movies/${id}`, {
     method: "PUT",
